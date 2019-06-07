@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Ajax</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script>
+        function loadData() {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetStudentsData",
+                success: function (result) {
+                    for (r in result) {
+                        $("#emptbody").append("<tr><td>" +
+                            result[r].StudentName + "</td><td>" + result[r].StudentRegNo + "</td><td>" + result[r].StudentCGPA + "</td></tr>");
+                    }
+                },
+                failure: function (result) {
+                    alert("Failed");
+                },
+                error: function (result) {
+                    alert("Error");
+                }
+            });
+        }
+        $(document).ready(loadData());
+       
+        function AddStudent() {
+            var stdObj = {
+                name: $('#name').val(),
+                reg: $('#reg').val(),
+                cgpa: $('#cgpa').val()
+            };
+            //document.write(stdObj['name']);
+            //document.write(stdObj['reg']);
+            //document.write(stdObj['cgpa']);
+            alert(JSON.stringify(stdObj));
+            $.ajax({
+                url: "/Home/AddStudent",
+                data: JSON.stringify(stdObj),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    loadData();
+                },
+                error: function (errormessage) {
+                    document.write("Error");
+                }
+            });
+        }
+
+        $('#addButton').click(function () {
+            AddStudent();
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- <button type="button" class="btn btn-primary">Load Employees Data</button> -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Registration Number</th>
+                    <th>CGPA</th>
+                </tr>
+            </thead>
+            <tbody id="emptbody"></tbody>
+        </table>
+    </div>
+    <form action="/" method="post" class="form-inline justify-content-center">
+        <input type="text" name="name" value="name" placeholder="Enter Name" class="m-1" id="name"/>
+        <input type="text" name="reg" value="reg" placeholder="Enter Reg." class="m-1" id="reg"/>
+        <input type="text" name="cgpa" value="cgpa" placeholder="Enter CGPA" class="m-1" id="cgpa"/>
+        <button id="addButton" class="btn btn-primary m-1" onclick="return AddStudent();">Add Student</button>
+    </form>
+</body>
+</html>
